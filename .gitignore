@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 .sh
+.DS_Store
+hideR.Rproj
+main.Rmd

@@ -14,7 +14,7 @@ vpngate_update_list <- function(){
     expr = download.file("https://www.vpngate.net/api/iphone/", "./config/meta_data.txt"),
     output_cond = fs::file_exists("./config/meta_data.txt"),
     max_iter = 5,
-    time_out = 20,
+    time_out = 10,
     quiet = F
   )
 
@@ -43,5 +43,5 @@ vpngate_select <- function(server_list, criteria){
     discard(~.x == "") %>%
     str_squish
 
-  return(vpn_tunnel$new(config_file = config))
+  return(openvpn_tunnel$new(config_file = config))
 }

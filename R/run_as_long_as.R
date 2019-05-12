@@ -2,6 +2,7 @@ run_as_long_as <- function(.x = NULL,
                            expr,
                            input_cond = F,
                            output_cond = NULL,
+                           obj = NULL,
                            max_iter = 1,
                            time_out = 0,
                            otherwise = NULL,
@@ -12,6 +13,8 @@ run_as_long_as <- function(.x = NULL,
   input_condition <- enexpr(input_cond)
   output_condition <- enexpr(output_cond)
 
+  if(!is.null(obj)){list2env(obj, envir = exec_env)}
+  
   # Return input, if the input condition is met
   if(eval(input_condition)) return(.x)
 

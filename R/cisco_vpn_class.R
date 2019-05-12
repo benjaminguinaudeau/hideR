@@ -1,13 +1,15 @@
+#' cisco_tunnel
+#' @export
+
 
 cisco_tunnel <- R6::R6Class("cisco_vpn",
-                            inherit = "vpn",
+                            inherit = vpn_tunnel,
                             private = list(
 
                             ),
                             public = list(
                               initialize = function(){
                                 self$id <- rstudioapi::showPrompt("Cisco VPN", "Please provide the host address")
-                                self$type <- "cisco"
                                 self$set_credentials(T)
                               },
                               save = function(){
@@ -33,8 +35,14 @@ cisco_tunnel <- R6::R6Class("cisco_vpn",
 
                                 success <- cisco_connect(host = self$id,
                                                          username = private$username,
-                                                         password = private$password)
-                                successful_connection(success)
+                                                         password = private$password, 
+                                                         time_out = time_out)
+                                
+                                if(success){
+                                  self$status <- "connected"
+                                  self$ip <- get_current_ip()
+                                  private$init_time <- Sys.time()
+                                }
                               }
                             )
 )
@@ -43,20 +51,35 @@ cisco_tunnel <- R6::R6Class("cisco_vpn",
 #' cisco_connect
 #' @export
 
-cisco_connect <- function(host, username, password){
+cisco_connect <- function(host, username, password, time_out = 20){
+  
+  cisco_disconnect(force = F)
+  
+  connect_env <- current_env()
   #print(host)
   current_ip <- get_current_ip()
   message(glue("Current IP: { current_ip }"))
-
-  system(
-    glue(
-      "printf '{ username }\n{ password }\ny' | /opt/cisco/anyconnect/bin/vpn -s connect { host }"
-    ), intern = F, ignore.stdout = F, ignore.stderr = F
-  )
+  
+  cisco_cmd <- ifelse(os() == "Linux", "openconnect", "/opt/cisco/anyconnect/bin/vpn -s connect")
+  
+  if(os() == "Linux"){
+    bashR::sudo(
+      glue(
+        "echo {password } | sudo { cisco_cmd } -u { username } vpn.uni-konstanz.de &"
+      ), intern = F, ignore.stdout = F, ignore.stderr = F
+    )
+  } else {
+    bashR::sudo(
+      glue(
+        "printf '{ username }\n{ password }\ny' | { cisco_cmd } { host } &"
+      ), intern = F, ignore.stdout = F, ignore.stderr = F
+    )
+  }
 
   run_as_long_as(
     expr = {cat(".") ; Sys.sleep(1) ; return(".")},
-    output_cond = connect_env$current_ip != get_current_ip(),
+    obj = list(current_ip = current_ip),
+    output_cond = current_ip != get_current_ip(),
     max_iter = time_out
   )
 
@@ -77,6 +100,8 @@ cisco_connect <- function(host, username, password){
 
 cisco_disconnect <- function(force = F){
 
+  cisco_cmd <- ifelse(os() == "Linux", "openconnect", "vpnagentd")
+  
   as.list(global_env()) %>%
     keep(~"vpn" %in% class(.x)) %>%
     map(~{
@@ -85,8 +110,12 @@ cisco_disconnect <- function(force = F){
     })
 
   if(force){
-    system("sudo killall /opt/cisco/anyconnect/bin/vpn")
+    system(glue("sudo killall { cisco_cmd }"))
   } else {
-    system("/opt/cisco/anyconnect/bin/vpn disconnect")
+    if(os() == "Linux"){
+      system(glue("sudo killall { cisco_cmd }"))  
+    } else {
+      system("/opt/cisco/anyconnect/bin/vpn disconnect")
+    }
   }
 }

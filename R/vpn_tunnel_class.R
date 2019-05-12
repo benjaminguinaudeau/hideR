@@ -1,3 +1,6 @@
+#' vpn_tunnel
+#' @export
+
 vpn_tunnel <- R6::R6Class("vpn",
                           #inherit = keras_embed,
                           private = list(

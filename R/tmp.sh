@@ -1,3 +1,3 @@
-#!/bin/bash
-
-sudo /usr/local/sbin/openvpn --config ~/.vpn/utorvpn.ovpn
+# #!/bin/bash
+# 
+# sudo /usr/local/sbin/openvpn --config ~/.vpn/utorvpn.ovpn

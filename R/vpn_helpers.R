@@ -1,3 +1,8 @@
+#' os
+#' @export
+
+os <- function() Sys.info()['sysname']
+
 # get_current_ip
 #' @export
 get_current_ip <- function(){
@@ -18,8 +23,8 @@ disconnect_all <- function(force = F){
 #' success_connection
 #' @export
 
-successful_connection <- function(sucess){
-  if(success){
+successful_connection <- function(.success, self, private){
+  if(.success){
     self$status <- "connected"
     self$ip <- get_current_ip()
     private$init_time <- Sys.time()

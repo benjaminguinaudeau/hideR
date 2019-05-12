@@ -2,7 +2,7 @@
 #' @export
 
 openvpn_tunnel <- R6::R6Class("openvpn_vpn",
-                              inherit = "vpn",
+                              inherit = hideR::vpn_tunnel,
                               private = list(
                                 config_file = NULL
                               ),
@@ -71,8 +71,8 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                   }
 
                                   success <- openvpn_connect(config_path, time_out = time_out, quiet = quiet)
-
-                                  successful_connection(success)
+                                
+                                  successful_connection(success, self = self, private = private)
                                 }
                               )
 )
@@ -83,6 +83,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
 
 openvpn_connect <- function(config_path, time_out = 50, quiet = T){
   config_path <- fs::path_expand(config_path)
+  connect_env <- current_env()
 
   openvpn_disconnect(2)
 
@@ -90,7 +91,6 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
     stop("No config file, please check that you specified the right path to the config file")
   }
 
-  connect_env <- current_env()
 
   current_ip <- get_current_ip()
   message(glue("Current IP: { current_ip }"))
@@ -99,10 +99,15 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
   #   command = glue("sudo /usr/local/sbin/openvpn --config { config_path } &"),
   #   show = T
   #   )
+  
+  cmd_openvpn <- ifelse(os() == "Linux", "openvpn", "/usr/local/sbin/openvpn")
+  #/usr/local/sbin/openvpn
+  trash <- bashR::sudo(glue("{ cmd_openvpn } --config { config_path } &"), 
+                ignore.stderr = F,
+                ignore.stdout = F,
+                intern = F)
 
-  system(glue("sudo /usr/local/sbin/openvpn --config { config_path } &"), intern = quiet)
-
-  run_as_long_as(
+  trash <- run_as_long_as(
     expr = {cat(".") ; Sys.sleep(1) ; return(".")},
     output_cond = connect_env$current_ip != get_current_ip(),
     max_iter = time_out
@@ -133,13 +138,16 @@ openvpn_disconnect <- function(time_out = 1, quiet = T){
       .x$ip <- "disconnected"
     })
 
+  proc_openvpn <- ifelse(os() == "Linux", "openvpn", "openvpn")
 
-
-  system("sudo killall openvpn",
-         ignore.stderr = T,
-         ignore.stdout = !quiet,
-         intern = F)
-
+  a <- suppressWarnings(
+    bashR::sudo(glue::glue("killall { proc_openvpn }"),
+         ignore.stderr = quiet,
+         ignore.stdout = quiet,
+         intern = quiet)
+  
+  )
+  
   while(time_out != 0){
     Sys.sleep(1)
     time_out <- time_out - 1
