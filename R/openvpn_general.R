@@ -30,7 +30,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                     str_extract("\\s[^\\s]*\\.[^\\s]*(\\s|$)") %>%
                                     str_squish()
 
-                                  if(is.null(config_path)) self$config_path <- glue("{ vpn_dir() }/{ self$id }.ovpn")
+                                  if(is.null(config_path)) self$config_path <- glue::glue("{ vpn_dir() }/{ self$id }.ovpn")
 
                                   message(glue("VPN Tunnel { self$id } was initialized."))
                                 },

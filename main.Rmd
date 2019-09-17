@@ -34,6 +34,7 @@ So far, it only works on mac OS.
 # Installation
 
 ## Installing Openvpn
+
 Before using hideR, you need to make sure that openvpn is install. 
 To install it, run
 
@@ -69,7 +70,7 @@ To install hideR, please run :
 ```{r}
 devtools::install_github("rstudio/rstudioapi")
 
-
+fs::dir_create(vpn_dir())
 devtools::install_github("benjaminguinaudeau/bashR", force = T)
 devtools::install_github("benjaminguinaudeau/hideR")
 
@@ -87,7 +88,7 @@ The most common way, to connect to a OpenVPN tunnel is to use a config file (usu
 ```{r}
 config_path <- "path/to/my/config/file"
 
-config_path <- "~/Downloads/vpngate_vpn541986795.opengw.net_udp_1349.ovpn"
+config_path <- "~/Downloads/utorvpn.ovpn"
 #config_path <- "~/.vpn/utorvpn.ovpn"
 
 # Initialize Connection according to configuration path
@@ -213,7 +214,7 @@ servers <- vpngate_update_list()
 servers %>%
   count(country_long, sort = T)
 
-vpn_brazil <- vpngate_select(servers, c("country_long" = "Peru"))
+vpn_brazil <- vpngate_select(servers, c("country_long" = "Malaysia"))
 vpn_brazil$connect(quiet = F)
 vpn_brazil$disconnect()
 
@@ -223,7 +224,7 @@ fastest_server <-  servers %>%
 
 vpngate_fast <- vpngate_select(servers, c('ip' = fastest_server$ip))
 
-vpngate_fast$connect(authentification = T, quiet = F, time_out = 40)
+vpngate_fast$connect(authentification = F, quiet = F, time_out = 40)
 
 
 
