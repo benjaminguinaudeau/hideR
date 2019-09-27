@@ -226,9 +226,18 @@ vpngate_fast <- vpngate_select(servers, c('ip' = fastest_server$ip))
 
 vpngate_fast$connect(authentification = F, quiet = F, time_out = 40)
 
-
-
 ```
 
+# Hide My Ass
 
+
+```{r}
+config_path <- "~/Downloads/vpn-configs/UDP/France.Paris.UDP.ovpn"
+
+vpn <- openvpn_tunnel$new(config_path = config_path)
+
+vpn$connect(authentification = T)
+vpn$status
+vpn$disconnect()
+```
 

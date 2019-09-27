@@ -56,6 +56,9 @@ list_all_connections <- function(){
 vpn_dir <- function(){
   pref <- fs::path_expand("~")
   vpn_dir <- paste(pref, ".vpn", sep = "/")
+  
+  if(!fs::dir_exists(vpn_dir)){fs::dir_create(vpn_dir)}
+  
   return(vpn_dir)
 }
 

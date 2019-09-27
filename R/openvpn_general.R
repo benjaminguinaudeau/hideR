@@ -100,7 +100,9 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
   #   show = T
   #   )
   
-  cmd_openvpn <- ifelse(os() == "Linux", "openvpn", "/usr/local/sbin/openvpn")
+  cmd_openvpn <- case_when(os() == "Linux" ~ "openvpn", 
+                           os() == "Windows" ~ "openvpn", 
+                           T ~ "/usr/local/sbin/openvpn")
   #/usr/local/sbin/openvpn
   trash <- bashR::sudo(glue("{ cmd_openvpn } --config { config_path } &"), 
                 ignore.stderr = F,
