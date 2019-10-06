@@ -232,12 +232,64 @@ vpngate_fast$connect(authentification = F, quiet = F, time_out = 40)
 
 
 ```{r}
-config_path <- "~/Downloads/vpn-configs/UDP/France.Paris.UDP.ovpn"
+page <- xml2::read_html("https://vpn.hidemyass.com/vpn-config/UDP/")
+nodes <- page %>%
+  rvest::html_children() %>%
+  rvest::html_children() %>%
+  .[5] %>%
+  rvest::html_children() %>%
+  tail(-1) %>%
+  map(rvest::html_attr, "href") %>%
+  reduce(c)
 
+data <- tibble(name = nodes, 
+               link = paste0("https://vpn.hidemyass.com/vpn-config/UDP/", nodes)) %>%
+  separate(name, sep ="\\.", into = c("country", "city", "type", "final", "a"), remove = F) %>%
+  mutate(state = ifelse(is.na(a), NA_character_, city),
+         city = ifelse(is.na(a), city, type), 
+         type = ifelse(is.na(a), type, a))  %>%
+  select(country, state, city, type, link)
+
+config_file <- data %>%
+  filter(country == "Germany") %>%
+  slice(1) %>%
+  pull(link) %>%
+  readLines()
+
+vpn <- openvpn_tunnel$new(config_file = config_file)
+# check if vpn_dir exists
+
+# For many VPN, no authorentifications is required
+connect_env <- current_env()
+vpn$connect()
+
+```
+
+
+```{r}
+library(tidyverse)
+
+config_path <- "~/Downloads/vpn-configs/UDP/France.Paris.UDP.ovpn"
 vpn <- openvpn_tunnel$new(config_path = config_path)
 
-vpn$connect(authentification = T)
+env_to_import <- rlang::new_environment()
+env_to_import[["vpn"]] <- vpn
+
+vpn <- bashR::run_as_job(
+  import_global = F,
+  env_to_import = as_environment(vpn),.command = ~{
+    env_to_import$vpn$connect(authentification = T,  username = "bguinaudeau", password = "") 
+    out <- env_to_import$vpn
+    })
+
 vpn$status
+vpn$ip
 vpn$disconnect()
+disconnect_all(force = T)
+```
+
+```{r}
+
+
 ```
 
