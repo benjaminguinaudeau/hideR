@@ -47,6 +47,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                 connect = function(
                                   authentification = F,
                                   prune_password = F,
+                                  error_on_fail = F,
                                   time_out = 20,
                                   quiet = T, 
                                   username = NULL, 
