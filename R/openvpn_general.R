@@ -78,7 +78,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                       write_lines(config_path)
                                   }
                                   
-                                  success <- openvpn_connect(config_path, time_out = time_out, quiet = quiet)
+                                  success <- openvpn_connect(config_path, time_out = time_out, quiet = quiet, error_on_fail = error_on_fail)
                                   
                                   successful_connection(success, self = self, private = private)
                                 }
