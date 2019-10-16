@@ -88,7 +88,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
 #' openvpn_connect
 #' @export
 
-openvpn_connect <- function(config_path, time_out = 50, quiet = T){
+openvpn_connect <- function(config_path, time_out = 50, quiet = T, error_on_fail = F){
   config_path <- fs::path_expand(config_path)
   if(os()== "Windows"){config_path <- stringr::str_replace_all(config_path, "/", "\\\\")}
   openvpn_disconnect(2)
@@ -133,10 +133,13 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
   if(current_ip == get_current_ip()){
     openvpn_disconnect()
     cat("\n")
-    message("Connexion could not be established")
+    if (error_on_fail) {
+      stop("Connection could not be established")
+    }
+    message("Connection could not be established")
     return(F)
   } else {
-    message(glue("Connexion Successfull\n New IP: { get_current_ip() }"))
+    message(glue("Connection Successfull\n New IP: { get_current_ip() }"))
     return(T)
   }
 }
@@ -196,9 +199,9 @@ openvpn_disconnect <- function(time_out = 1, quiet = T){
 #   if(current_ip == get_current_ip()){
 #     openvpn_disconnect()
 #     cat("\n")
-#     message("Connexion could not be established")
+#     message("Connection could not be established")
 #   } else {
-#     message(glue("Connexion Successfull\n New IP: { new_ip }"))
+#     message(glue("Connection Successfull\n New IP: { new_ip }"))
 #   }
 # }
 
