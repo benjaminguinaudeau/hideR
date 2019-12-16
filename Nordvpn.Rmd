@@ -12,23 +12,6 @@ devtools::load_all()
 ```
 
 
-```{r}
-# "https://nordvpn.com/fr/ovpn/"
-library(hideR)
-# novpn_init(dir = ".") # Only run once
-
-configs <- novpn_get_configs(dir = ".")
-config <- sample(configs, 1)
-
-novpn <- novpn_new_tunnnel(config)
-
-# pwd <- ""
-novpn$connect(username = "benjamin.guinaudeau@uni-konstanz.de", password = pwd,
-            authentification = T, quiet = F, prune_password = F)
-
-novpn$disconnect()
-```
-
 
 ```{r}
 

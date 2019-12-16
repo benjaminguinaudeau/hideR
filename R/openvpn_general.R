@@ -17,7 +17,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                   if(!is.null(config_path)){
                                     self$config_path <- config_path
                                     
-                                    private$config_file <- read_lines(config_path)
+                                    private$config_file <- readr::read_lines(config_path)
                                   } else {
                                     private$config_file <- config_file
                                   }
@@ -25,15 +25,15 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                   #self$status <- "disconnected"
                                   
                                   self$id <- private$config_file %>%
-                                    discard(str_detect, "^#") %>%
-                                    keep(str_detect, "remote") %>%
+                                    purrr::discard(stringr::str_detect, "^#") %>%
+                                    purrr::keep(stringr::str_detect, "remote") %>%
                                     .[1] %>%
-                                    str_extract("\\s[^\\s]*\\.[^\\s]*(\\s|$)") %>%
-                                    str_squish()
+                                    stringr::str_extract("\\s[^\\s]*\\.[^\\s]*(\\s|$)") %>%
+                                    stringr::str_squish()
                                   
                                   if(is.null(config_path)) self$config_path <- glue::glue("{ vpn_dir() }/{ self$id }.ovpn")
                                   
-                                  message(glue("VPN Tunnel { self$id } was initialized."))
+                                  message(glue::glue("VPN Tunnel { self$id } was initialized."))
                                 },
                                 save = function(){
                                   
@@ -53,14 +53,14 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                   username = NULL, 
                                   password = NULL
                                 ){
-                                  config_path <- glue("{ vpn_dir() }/{ self$id }.ovpn")
+                                  config_path <- glue::glue("{ vpn_dir() }/{ self$id }.ovpn")
                                   
                                   if(!authentification) {
                                     write_lines(private$config_file, config_path)
                                   } else {
                                     
                                     credential_path <- config_path %>%
-                                      str_replace(".ovpn", "_pass.txt")
+                                      stringr::str_replace(".ovpn", "_pass.txt")
                                     if(is.null(username)){
                                       
                                       self$set_credentials(new_file = !fs::file_exists(credential_path) | prune_password,
@@ -98,11 +98,11 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
     stop("No config file, please check that you specified the right path to the config file")
   }
   
-  
-  .GlobalEnv$current_ip <- get_current_ip()
-  .GlobalEnv$current_location <- get_current_location()
-  message(glue("Current IP: { .GlobalEnv$current_ip }"))
-  message(glue("Current Location: { .GlobalEnv$current_location }"))
+  a <- get_current_ip(loc = T)
+  .GlobalEnv$current_ip <- a$ip
+  .GlobalEnv$current_location <- a$reg_info
+  message(glue::glue("Current IP: { .GlobalEnv$current_ip }"))
+  message(glue::glue("Current Location: { .GlobalEnv$current_location }"))
   
   # shell <- rstudioapi::terminalExecute(
   #   command = glue("sudo /usr/local/sbin/openvpn --config { config_path } &"),
@@ -114,12 +114,12 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
                            T ~ "/usr/local/sbin/openvpn")
   #/usr/local/sbin/openvpn
   if(os() != "Windows"){
-    trash <- bashR::sudo(glue("{ cmd_openvpn } --config { config_path } &"), 
+    trash <- bashR::sudo(glue::glue("{ cmd_openvpn } --config { config_path } &"), 
                          ignore.stderr = F,
                          ignore.stdout = F,
                          intern = F)
   } else {
-    trash <- shell(glue('START /MIN { cmd_openvpn } --config { config_path } &'), 
+    trash <- shell(glue::glue('START /MIN { cmd_openvpn } --config { config_path } &'), 
                    ignore.stderr = F,
                    ignore.stdout = F,
                    intern = F, 
@@ -139,11 +139,12 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
     message("Connexion could not be established")
     return(F)
   } else {
-    .GlobalEnv$current_ip <- get_current_ip()
-    .GlobalEnv$current_location <- get_current_location()
-    message(glue("Connexion Successfull\n"))
-    message(glue("Current IP: { .GlobalEnv$current_ip }"))
-    message(glue("Current Location: { .GlobalEnv$current_location }"))
+    a <- get_current_ip(loc = T)
+    .GlobalEnv$current_ip <- a$ip
+    .GlobalEnv$current_location <- a$reg_info
+    message(glue::glue("Connexion Successfull\n"))
+    message(glue::glue("Current IP: { .GlobalEnv$current_ip }"))
+    message(glue::glue("Current Location: { .GlobalEnv$current_location }"))
     return(T)
   }
 }
@@ -155,9 +156,9 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
 
 openvpn_disconnect <- function(time_out = 1, quiet = T){
   
-  as.list(global_env()) %>%
-    keep(~"vpn" %in% class(.x)) %>%
-    map(~{
+  as.list(rlang::global_env()) %>%
+    purrr::keep(~"vpn" %in% class(.x)) %>%
+    purrr::map(~{
       .x$status <- "disconnected"
       .x$ip <- "disconnected"
     })

@@ -8,10 +8,10 @@ run_as_long_as <- function(.x = NULL,
                            otherwise = NULL,
                            quiet = T){
 
-  exec_env <- current_env()
-  expression <- enexpr(expr)
-  input_condition <- enexpr(input_cond)
-  output_condition <- enexpr(output_cond)
+  exec_env <- rlang::current_env()
+  expression <- rlang::enexpr(expr)
+  input_condition <- rlang::enexpr(input_cond)
+  output_condition <- rlang::enexpr(output_cond)
 
   if(!is.null(obj)){list2env(obj, envir = exec_env)}
   
@@ -25,7 +25,7 @@ run_as_long_as <- function(.x = NULL,
 
   while(!break_trig){
     #browser()
-    if(!quiet) message(glue("Iter # { iter }"))
+    if(!quiet) message(glue::glue("Iter # { iter }"))
 
     if(time_out == 0){
       exec_env$out <- try(eval(expression, envir = exec_env), silent = T)
