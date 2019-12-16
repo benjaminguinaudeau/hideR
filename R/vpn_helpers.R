@@ -76,3 +76,14 @@ get_connection <- function(id){
   return(tunnel)
 }
 
+
+#' get_connection
+#' @export
+get_current_location <- function(){
+  page <- xml2::read_html("https://www.whatismybrowser.com/detect/ip-address-location")
+  
+  page %>% 
+    html_node("#detected_value") %>%
+    html_text
+}
+

@@ -4,7 +4,7 @@
 \name{cisco_tunnel}
 \alias{cisco_tunnel}
 \title{cisco_tunnel}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+\format{An object of class \code{R6ClassGenerator} of length 25.}
 \usage{
 cisco_tunnel
 }

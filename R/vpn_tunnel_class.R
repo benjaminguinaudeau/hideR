@@ -9,6 +9,7 @@ vpn_tunnel <- R6::R6Class("vpn",
                             init_time = NULL
                           ),
                           public = list(
+                            location = NULL,
                             id = NULL,
                             ip = NULL,
                             status = "disconnected",
