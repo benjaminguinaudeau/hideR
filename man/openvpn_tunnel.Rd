@@ -3,12 +3,12 @@
 \docType{data}
 \name{openvpn_tunnel}
 \alias{openvpn_tunnel}
-\title{vpn_tunnel}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+\title{openvpn_tunnel}
+\format{An object of class \code{R6ClassGenerator} of length 25.}
 \usage{
 openvpn_tunnel
 }
 \description{
-vpn_tunnel
+openvpn_tunnel
 }
 \keyword{datasets}

@@ -1,0 +1,54 @@
+---
+title: "Mongo"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(mongolite)
+
+mongo <- dockeR::create_container("bitnami/mongodb:latest", "mongo_2", 
+                                  "-v mongo_2:/bitnami")
+
+port <- dockeR::get_port("mongo_2", 27017)
+m <- mongo(url = glue::glue("mongodb://127.0.0.1:{port}-/?compressors=disabled&gssapiServiceName=mongodb"))
+
+d <- mtcars %>%
+  mutate(a = list(tibble(a = 1))) %>%
+  glimpse
+
+m$disconnect()
+m <- mongo("tbl", url = glue::glue("mongodb://127.0.0.1:{port}-/?compressors=disabled&gssapiServiceName=mongodb"))
+m$insert(mtcars)
+m$disconnect()
+m <- mongo("tbl_2", url = glue::glue("mongodb://127.0.0.1:{port}-/?compressors=disabled&gssapiServiceName=mongodb"))
+m$insert(d)
+m$find()
+
+m$count()
+m$find()
+m$index(add = '{"disp" : 1, "drat" : 1}')
+dmd$index(add = '{"depth" : 1, "price" : 1}')
+
+#$lt, $gt, $lte, $gte,
+
+query = '{"created_at": { "$gte" : { "$date" : "2017-01-01T00:00:00Z" }}}',
+
+m$find('{"cyl" : { "$lt" : 15 } }', 
+       fields = '{"mpg" : true, "disp" : true, "drat" : true}',
+       sort = '{"disp": -1, "drat" : 1}',
+       limit = 50)
+
+test <- dmd$find(
+  query = '{"cut" : "Premium", "price" : { "$lt" : 1000 } }', 
+  fields = '{"cut" : true, "clarity" : true}',
+  limit = 5
+)
+
+
+
+```
+

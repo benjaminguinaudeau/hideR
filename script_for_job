@@ -22,6 +22,6 @@ pacman::p_load(utils)
 pacman::p_load(datasets)
 pacman::p_load(methods)
 pacman::p_load(base) 
-    vpn$connect(authentification = T, username = "bguinaudeau", password = "KYP-QUZ-a8p-vdN")
-    out <- vpn
+    env_to_import$vpn$connect(authentification = T, username = "bguinaudeau", password = "")
+    out <- env_to_import$vpn
  if(exists("out")){save(out, file = ".tmp.Rdata")}

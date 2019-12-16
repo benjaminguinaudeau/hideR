@@ -4,7 +4,7 @@
 \name{vpn_tunnel}
 \alias{vpn_tunnel}
 \title{vpn_tunnel}
-\format{An object of class \code{R6ClassGenerator} of length 24.}
+\format{An object of class \code{R6ClassGenerator} of length 25.}
 \usage{
 vpn_tunnel
 }

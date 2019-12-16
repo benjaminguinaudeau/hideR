@@ -1,0 +1,114 @@
+---
+title: "nordvpn"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+pacman::p_load(tidyverse, glue, rlang, rvest)
+devtools::load_all()
+
+```
+
+
+```{r}
+# "https://nordvpn.com/fr/ovpn/"
+library(hideR)
+# novpn_init(dir = ".") # Only run once
+
+configs <- novpn_get_configs(dir = ".")
+config <- sample(configs, 1)
+
+novpn <- novpn_new_tunnnel(config)
+
+# pwd <- ""
+novpn$connect(username = "benjamin.guinaudeau@uni-konstanz.de", password = pwd,
+            authentification = T, quiet = F, prune_password = F)
+
+novpn$disconnect()
+```
+
+
+```{r}
+
+devtools::install_github("valentinumbach/SoFIFA")
+library(SoFIFA)
+leagues <- get_leagues()
+
+team_scores <- get_team_scores(18, max_results = 5)
+library(rvest)
+players <- 1:20 %>% #903
+  map(~{
+    cat("\rPage: ", .x)
+    try(
+      out <- paste0("http://sofifa-api.herokuapp.com/api/v1/players/?format=json&page=", .x) %>%
+        read_html() %>%
+        html_text() %>% 
+        jsonlite::fromJSON(.) %>%
+        .[["results"]]
+    )
+    utils::flush.console()
+    return(out)
+  }) %>%
+  keep(~class(.x)[1] != "try-error")
+
+df <- players %>%
+  map_dfr(~{
+    
+    .x %>%
+      as_tibble() %>%
+      # bashR::simule_map(4)
+      imap_dfc(~{
+        if(is.list(.x)){
+          if(is.data.frame(.x)){
+            .x <- as_tibble(.x) %>%
+              split(1:nrow(.))
+            
+          } else if(is.character(.x[[1]])){
+            .x <- .x %>% map_chr(paste,collapse = "|")
+          }
+          
+        }
+        .x <- .x %>%
+          tibble(a = .) %>%
+          set_names(.y)
+        
+        return(.x)
+        
+      }) 
+  }) %>%
+  unnest(social) %>%
+  unnest(skills) %>%
+  glimpse
+
+data <- read_csv("~/Downloads/soccer-spi/spi_matches.csv")
+
+d <- data %>% glimpse
+mutate(target = score1 > score2, 
+       pred = prob1 > prob2 & prob1 > probtie, 
+       target_ = case_when(
+         score1 > score2 ~ 0, 
+         score1 < score2 ~ 2, 
+         score1 == score2 ~ 1
+       ), 
+       pred_ = case_when(
+         prob1 >= prob2 & prob1 >= probtie ~ 0, 
+         probtie >= prob2 ~ 1, 
+         prob2 >= probtie ~ 2
+       )) %>% 
+  drop_na
+count(target == pred) %>%
+  glimpse
+
+count(target == pred)
+glimpse
+count(date)
+count(league)
+
+actual <- d$target_
+pred <- d$pred_
+
+
+```
+

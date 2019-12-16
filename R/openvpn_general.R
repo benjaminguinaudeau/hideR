@@ -1,4 +1,4 @@
-#' vpn_tunnel
+#' openvpn_tunnel
 #' @export
 
 openvpn_tunnel <- R6::R6Class("openvpn_vpn",
@@ -27,6 +27,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                   self$id <- private$config_file %>%
                                     discard(str_detect, "^#") %>%
                                     keep(str_detect, "remote") %>%
+                                    .[1] %>%
                                     str_extract("\\s[^\\s]*\\.[^\\s]*(\\s|$)") %>%
                                     str_squish()
                                   
@@ -100,7 +101,9 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T, error_on_fail
   
   
   .GlobalEnv$current_ip <- get_current_ip()
+  .GlobalEnv$current_location <- get_current_location()
   message(glue("Current IP: { .GlobalEnv$current_ip }"))
+  message(glue("Current Location: { .GlobalEnv$current_location }"))
   
   # shell <- rstudioapi::terminalExecute(
   #   command = glue("sudo /usr/local/sbin/openvpn --config { config_path } &"),
@@ -140,7 +143,15 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T, error_on_fail
     message("Connection could not be established")
     return(F)
   } else {
+<<<<<<< HEAD
     message(glue("Connection Successfull\n New IP: { get_current_ip() }"))
+=======
+    .GlobalEnv$current_ip <- get_current_ip()
+    .GlobalEnv$current_location <- get_current_location()
+    message(glue("Connexion Successfull\n"))
+    message(glue("Current IP: { .GlobalEnv$current_ip }"))
+    message(glue("Current Location: { .GlobalEnv$current_location }"))
+>>>>>>> master
     return(T)
   }
 }
