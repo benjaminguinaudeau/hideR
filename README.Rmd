@@ -11,7 +11,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 
-pacman::p_load(tidyverse, glue, rlang, furrr, rvest, keyring)
+# pacman::p_load(tidyverse, glue, rlang, furrr, rvest, keyring)
 
 # source("R/run_as_long_as.R")
 # source("R/vpn_helpers.R")
@@ -230,6 +230,28 @@ vpngate_fast <- vpngate_select(servers, c('ip' = fastest_server$ip))
 vpngate_fast$connect(authentification = F, quiet = F, time_out = 40)
 
 ```
+
+# NordVPN
+
+
+```{r}
+# "https://nordvpn.com/fr/ovpn/"
+# library(hideR)
+
+novpn_init(dir = ".") # Only run once
+
+configs <- novpn_get_configs(dir = ".")
+config <- sample(configs, 1)
+
+novpn <- novpn_new_tunnnel(config)
+
+# pwd <- ""
+novpn$connect(username = "benjamin.guinaudeau@uni-konstanz.de", password = pwd,
+            authentification = T, quiet = F, prune_password = F)
+
+novpn$disconnect()
+```
+
 
 # Hide My Ass
 

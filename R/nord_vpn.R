@@ -19,5 +19,5 @@ novpn_get_configs <- function(dir = getwd()){
 #' novpn_new_tunnnel
 #' @export
 novpn_new_tunnnel <- function(config){
-  openvpn_tunnel$new(config_file = readLines(str_split(config, "\n")[[1]]))
+  openvpn_tunnel$new(config_file = readLines(stringr::str_split(config, "\n")[[1]]))
 }
