@@ -5,6 +5,9 @@ date: '2019-04-11'
 output: github_document
 ---
 
+# hideR <img src="man/figures/hideR.png" width="160px" align="right" />
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 

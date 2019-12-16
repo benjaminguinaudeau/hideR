@@ -48,6 +48,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                 connect = function(
                                   authentification = F,
                                   prune_password = F,
+                                  error_on_fail = F,
                                   time_out = 20,
                                   quiet = T, 
                                   username = NULL, 
@@ -78,7 +79,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
                                       write_lines(config_path)
                                   }
                                   
-                                  success <- openvpn_connect(config_path, time_out = time_out, quiet = quiet)
+                                  success <- openvpn_connect(config_path, time_out = time_out, quiet = quiet, error_on_fail = error_on_fail)
                                   
                                   successful_connection(success, self = self, private = private)
                                 }
@@ -89,7 +90,7 @@ openvpn_tunnel <- R6::R6Class("openvpn_vpn",
 #' openvpn_connect
 #' @export
 
-openvpn_connect <- function(config_path, time_out = 50, quiet = T){
+openvpn_connect <- function(config_path, time_out = 50, quiet = T, error_on_fail = F){
   config_path <- fs::path_expand(config_path)
   if(os()== "Windows"){config_path <- stringr::str_replace_all(config_path, "/", "\\\\")}
   openvpn_disconnect(2)
@@ -136,15 +137,20 @@ openvpn_connect <- function(config_path, time_out = 50, quiet = T){
   if(current_ip == get_current_ip()){
     openvpn_disconnect()
     cat("\n")
-    message("Connexion could not be established")
+    if (error_on_fail) {
+      stop("Connection could not be established")
+    }
+    message("Connection could not be established")
     return(F)
   } else {
+
     a <- get_current_ip(loc = T)
     .GlobalEnv$current_ip <- a$ip
     .GlobalEnv$current_location <- a$reg_info
     message(glue::glue("Connexion Successfull\n"))
     message(glue::glue("Current IP: { .GlobalEnv$current_ip }"))
     message(glue::glue("Current Location: { .GlobalEnv$current_location }"))
+    
     return(T)
   }
 }
@@ -204,9 +210,9 @@ openvpn_disconnect <- function(time_out = 1, quiet = T){
 #   if(current_ip == get_current_ip()){
 #     openvpn_disconnect()
 #     cat("\n")
-#     message("Connexion could not be established")
+#     message("Connection could not be established")
 #   } else {
-#     message(glue("Connexion Successfull\n New IP: { new_ip }"))
+#     message(glue("Connection Successfull\n New IP: { new_ip }"))
 #   }
 # }
 

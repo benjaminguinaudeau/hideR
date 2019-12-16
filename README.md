@@ -1,7 +1,6 @@
-Readm
-================
-Benjamin
-2019-04-11
+# hideR <img src="man/figures/hideR2.png" width="160px" align="right" />
+
+[![](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental) [![](https://img.shields.io/github/languages/code-size/benjaminguinaudeau/hideR.svg)](https://github.com/benjaminguinaudeau/hideR) [![](https://img.shields.io/github/last-commit/benjaminguinaudeau/hideR.svg)](https://github.com/benjaminguinaudeau/hideR/commits/master)
 
 # To do
 
