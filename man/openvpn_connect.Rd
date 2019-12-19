@@ -4,8 +4,7 @@
 \alias{openvpn_connect}
 \title{openvpn_connect}
 \usage{
-openvpn_connect(config_path, time_out = 50, quiet = T,
-  error_on_fail = F)
+openvpn_connect(config_path, time_out = 50, quiet = T, error_on_fail = F)
 }
 \description{
 openvpn_connect
