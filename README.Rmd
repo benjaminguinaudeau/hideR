@@ -20,7 +20,6 @@ devtools::load_all()
 
 # To do
 + unit testing for run_as_long_as
-+ Using Hide My Ass with R
 
 This package aims at providing an interface to handle vpn connexion from R.
 It proposes wrapper for openvpn connexion and specifically for : 
@@ -235,18 +234,18 @@ vpngate_fast$connect(authentification = F, quiet = F, time_out = 40)
 # "https://nordvpn.com/fr/ovpn/"
 # library(hideR)
 
-novpn_init(dir = ".") # Only run once
+nord_vpn_init(dir = ".") # Only run once
 
-configs <- novpn_get_configs(dir = ".")
+configs <- nord_vpn_get_configs(dir = ".")
 config <- sample(configs, 1)
 
-novpn <- novpn_new_tunnnel(config)
+novpn <- nord_vpn_new_tunnnel(config)
 
 # pwd <- ""
-novpn$connect(username = "benjamin.guinaudeau@uni-konstanz.de", password = pwd,
+nord_vpn$connect(username = "benjamin.guinaudeau@uni-konstanz.de", password = pwd,
             authentification = T, quiet = F, prune_password = F)
 
-novpn$disconnect()
+nord_vpn$disconnect()
 ```
 
 
